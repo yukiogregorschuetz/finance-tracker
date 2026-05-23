@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { db } from './supabase.js'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import * as XLSX from 'xlsx'
@@ -197,11 +197,14 @@ useEffect(() => {
   loadFromSupabase().then(data => {
     if (data?.txs?.length > 0) setTxs(data.txs)
     if (Object.keys(data?.budgets || {}).length > 0) setBudgets(data.budgets)
+    loaded.current = true
   })
 }, [])
 
 // Supabase sync bei jeder Änderung
+const loaded = useRef(false)
 useEffect(() => {
+  if (!loaded.current) return
   syncToSupabase(txs, budgets, recurring)
 }, [txs, budgets, recurring])
   const [theme, toggleTheme]    = useTheme()
