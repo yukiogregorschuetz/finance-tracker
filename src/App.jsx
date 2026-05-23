@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
+import { db } from './supabase.js'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import * as XLSX from 'xlsx'
 import './index.css'
+
 
 // ── Daten & Konstanten ─────────────────────────────────────────────────────
 
@@ -53,7 +55,34 @@ const MN     = ['','Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt',
 const fmtMon = m  => MN[parseInt(m.slice(5))] + ' ' + m.slice(2,4)
 
 // ── Hooks ──────────────────────────────────────────────────────────────────
+async function syncToSupabase(txs, budgets, recurring) {
+  try {
+    // Transaktionen sync
+    await db.from('transactions').delete().neq('id', 0)
+    if (txs.length > 0) {
+      await db.from('transactions').insert(
+        txs.map(t => ({ description: t.desc, amount: t.amount, type: t.type, cat: t.cat, date: t.date, source: t.source }))
+      )
+    }
+    // Budgets sync
+    await db.from('budgets').delete().neq('id', 0)
+    const budgetRows = Object.entries(budgets).map(([cat, amount]) => ({ cat, amount }))
+    if (budgetRows.length > 0) await db.from('budgets').insert(budgetRows)
+  } catch(e) { console.log('Sync fehler:', e) }
+}
 
+async function loadFromSupabase() {
+  try {
+    const [txRes, budRes] = await Promise.all([
+      db.from('transactions').select('*').order('date', { ascending: false }),
+      db.from('budgets').select('*')
+    ])
+    const txs = (txRes.data || []).map(t => ({ id: t.id, desc: t.description, amount: t.amount, type: t.type, cat: t.cat, date: t.date, source: t.source }))
+    const budgets = {}
+    ;(budRes.data || []).forEach(b => { budgets[b.cat] = b.amount })
+    return { txs, budgets }
+  } catch(e) { return null }
+}
 function useLS(key, def) {
   const [v, setV] = useState(() => {
     try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : def } catch { return def }
@@ -181,6 +210,18 @@ export default function App() {
   const [recurring, setRec]     = useLS('ft-recurring', DEF_RECURRING)
   const [month, setMonth]       = useLS('ft-month', '2026-05')
   const [nid, setNid]           = useLS('ft-nid', 200)
+// Supabase laden beim Start
+useEffect(() => {
+  loadFromSupabase().then(data => {
+    if (data?.txs?.length > 0) setTxs(data.txs)
+    if (Object.keys(data?.budgets || {}).length > 0) setBudgets(data.budgets)
+  })
+}, [])
+
+// Supabase sync bei jeder Änderung
+useEffect(() => {
+  syncToSupabase(txs, budgets, recurring)
+}, [txs, budgets, recurring])
   const [theme, toggleTheme]    = useTheme()
   const [toast, setToast]       = useState(null)
 
