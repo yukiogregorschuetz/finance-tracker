@@ -58,10 +58,12 @@ const fmtMon = m  => MN[parseInt(m.slice(5))] + ' ' + m.slice(2,4)
 async function syncToSupabase(txs, budgets, recurring) {
   try {
     // Transaktionen sync
-    await db.from('transactions').delete().neq('id', 0)
-    if (txs.length > 0) {
-      await db.from('transactions').insert(
-        txs.map(t => ({ description: t.desc, amount: t.amount, type: t.type, cat: t.cat, date: t.date, source: t.source }))
+  if (txs.length > 0) {
+  await db.from('transactions').upsert(
+    txs.map(t => ({ id: t.id, description: t.desc, amount: t.amount, type: t.type, cat: t.cat, date: t.date, source: t.source })),
+    { onConflict: 'id' }
+  )
+}
       )
     }
     // Budgets sync
@@ -510,7 +512,7 @@ function Transactions({ txs, setTxs, nid, setNid, toast, theme }) {
 
   const save = () => {
     if (!form.desc||!form.amount||!form.date) { toast('Pflichtfelder ausfüllen', 'err'); return }
-    setTxs(p => [...p, { ...form, id:nid, amount:parseFloat(form.amount) }])
+setTxs(p => [{ ...form, id:nid, amount:parseFloat(form.amount) }, ...p])
     setNid(n => n+1); setForm(null); toast('Buchung gespeichert ✓')
   }
 
