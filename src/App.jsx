@@ -73,22 +73,24 @@ function useTheme() {
 
 // ── AI-Kategorisierung ─────────────────────────────────────────────────────
 
-async function aiCat(desc) {
-  try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514', max_tokens: 30,
-        messages: [{ role: 'user', content:
-          `Kategorisiere: "${desc}". Nur eine dieser Kategorien: Wohnen, Lebensmittel, Transport, Freizeit, Gesundheit, Versicherung, Gehalt, Sonstiges. Antworte NUR mit dem Kategorienamen.`
-        }]
-      })
-    })
-    const d = await r.json()
-    const t = d.content?.[0]?.text?.trim() || 'Sonstiges'
-    return CATS.includes(t) ? t : 'Sonstiges'
-  } catch { return 'Sonstiges' }
+const RULES = {
+  Lebensmittel: ['rewe','lidl','aldi','edeka','penny','netto','kaufland','dm','rossmann','bäcker','metzger','restaurant','pizza','mcdonalds','burger','kfc','subway','lieferando'],
+  Wohnen:       ['miete','nebenkosten','strom','gas','wasser','internet','telefon','hausgeld'],
+  Transport:    ['monatskarte','db','bahn','öpnv','tankstelle','shell','aral','bp','uber','taxi','flixbus','lufthansa'],
+  Freizeit:     ['netflix','spotify','amazon','disney','kino','theater','konzert','steam','playstation','gym','fitnessstudio'],
+  Gesundheit:   ['apotheke','arzt','krankenhaus','optiker','zahnarzt','physiotherapie'],
+  Versicherung: ['versicherung','allianz','aok','tkk','barmer','huk'],
+  Gehalt:       ['gehalt','lohn','freelance','honorar'],
 }
+
+async function aiCat(desc) {
+  const low = desc.toLowerCase()
+  for (const [cat, keywords] of Object.entries(RULES)) {
+    if (keywords.some(k => low.includes(k))) return cat
+  }
+  return 'Sonstiges'
+}
+
 
 // ── Shared UI-Komponenten ──────────────────────────────────────────────────
 
