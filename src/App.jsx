@@ -57,19 +57,17 @@ const fmtMon = m  => MN[parseInt(m.slice(5))] + ' ' + m.slice(2,4)
 // ── Hooks ──────────────────────────────────────────────────────────────────
 async function syncToSupabase(txs, budgets, recurring) {
   try {
-    // Transaktionen sync
-  if (txs.length > 0) {
-  await db.from('transactions').upsert(
-    txs.map(t => ({ id: t.id, description: t.desc, amount: t.amount, type: t.type, cat: t.cat, date: t.date, source: t.source })),
-    { onConflict: 'id' }
-  )
-}
-    
-    // Budgets sync
+    await db.from('transactions').delete().neq('id', 0)
+    if (txs.length > 0) {
+      await db.from('transactions').insert(
+        txs.map(t => ({ description: t.desc, amount: t.amount, type: t.type, cat: t.cat, date: t.date, source: t.source }))
+      )
+    }
     const budgetRows = Object.entries(budgets).map(([cat, amount]) => ({ cat, amount }))
-if (budgetRows.length > 0) await db.from('budgets').upsert(budgetRows, { onConflict: 'cat' })
+    if (budgetRows.length > 0) await db.from('budgets').upsert(budgetRows, { onConflict: 'cat' })
   } catch(e) { console.log('Sync fehler:', e) }
 }
+    
 
 async function loadFromSupabase() {
   try {
