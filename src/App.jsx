@@ -64,8 +64,7 @@ async function syncToSupabase(txs, budgets, recurring) {
     { onConflict: 'id' }
   )
 }
-      )
-    }
+    
     // Budgets sync
     const budgetRows = Object.entries(budgets).map(([cat, amount]) => ({ cat, amount }))
 if (budgetRows.length > 0) await db.from('budgets').upsert(budgetRows, { onConflict: 'cat' })
