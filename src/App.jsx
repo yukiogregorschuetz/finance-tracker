@@ -23,23 +23,7 @@ const CAT = {
   Sonstiges:    { c:'var(--t3)',     bg:'var(--card3)',     hex:'#A4A3B0', hexDk:'#52506A', icon:'ti-dots'          },
 }
 
-const SAMPLE = [
-  { id:1,  desc:'Gehalt Mai',        amount:2800,  type:'income',  cat:'Gehalt',       date:'2026-05-01', source:'Bankkonto'  },
-  { id:2,  desc:'Miete',             amount:850,   type:'expense', cat:'Wohnen',       date:'2026-05-02', source:'Bankkonto'  },
-  { id:3,  desc:'REWE',              amount:67.40, type:'expense', cat:'Lebensmittel', date:'2026-05-03', source:'Kreditkarte'},
-  { id:4,  desc:'Monatskarte',       amount:49,    type:'expense', cat:'Transport',    date:'2026-05-04', source:'Bankkonto'  },
-  { id:5,  desc:'Netflix',           amount:17.99, type:'expense', cat:'Freizeit',     date:'2026-05-05', source:'PayPal'     },
-  { id:6,  desc:'Lidl',              amount:43.20, type:'expense', cat:'Lebensmittel', date:'2026-05-07', source:'Kreditkarte'},
-  { id:7,  desc:'Kfz-Versicherung',  amount:112,   type:'expense', cat:'Versicherung', date:'2026-05-10', source:'Bankkonto'  },
-  { id:8,  desc:'Freelance',         amount:650,   type:'income',  cat:'Gehalt',       date:'2026-05-12', source:'PayPal'     },
-  { id:9,  desc:'Apotheke',          amount:28.50, type:'expense', cat:'Gesundheit',   date:'2026-05-14', source:'Kreditkarte'},
-  { id:10, desc:'Restaurant',        amount:54,    type:'expense', cat:'Freizeit',     date:'2026-05-16', source:'Kreditkarte'},
-  { id:11, desc:'Gehalt April',      amount:2800,  type:'income',  cat:'Gehalt',       date:'2026-04-01', source:'Bankkonto'  },
-  { id:12, desc:'Miete April',       amount:850,   type:'expense', cat:'Wohnen',       date:'2026-04-02', source:'Bankkonto'  },
-  { id:13, desc:'Einkauf April',     amount:176,   type:'expense', cat:'Lebensmittel', date:'2026-04-10', source:'Kreditkarte'},
-  { id:14, desc:'ÖPNV April',        amount:49,    type:'expense', cat:'Transport',     date:'2026-04-04', source:'Bankkonto'  },
-  { id:15, desc:'Kino',              amount:28,    type:'expense', cat:'Freizeit',     date:'2026-04-20', source:'Kreditkarte'},
-]
+
 const DEF_BUDGETS   = { Wohnen:900, Lebensmittel:400, Transport:100, Freizeit:150, Gesundheit:100, Versicherung:150 }
 const DEF_RECURRING = [
   { id:1, desc:'Miete',            amount:850,  type:'expense', cat:'Wohnen',       source:'Bankkonto', freq:'Monatlich', nextDate:'2026-06-01' },
@@ -203,7 +187,7 @@ function Select({ children, style, ...props }) {
 
 export default function App() {
   const [tab, setTab]           = useState('dashboard')
-  const [txs, setTxs]           = useLS('ft-txs', SAMPLE)
+const [txs, setTxs] = useLS('ft-txs', [])
   const [budgets, setBudgets]   = useLS('ft-budgets', DEF_BUDGETS)
   const [recurring, setRec]     = useLS('ft-recurring', DEF_RECURRING)
   const [month, setMonth]       = useLS('ft-month', '2026-05')
