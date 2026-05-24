@@ -1042,7 +1042,7 @@ export function ImportView({ setTxs, nid, setNid, toast, onBack, cats, rules }) 
         </>
       )}
     </div>
-  )
+   )
   }
   // SparkasseImport.jsx — Automatischer Sparkasse CSV Importer
 // Füge diese Komponente in App.jsx ein (vor der letzten Zeile)
