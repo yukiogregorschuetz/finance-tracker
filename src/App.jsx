@@ -301,7 +301,7 @@ export default function App() {
           {tab==='transactions' && <Transactions txs={filtered} setTxs={setTxs} nid={nid} setNid={setNid} toast={showToast} cats={cats} sources={sources} rules={rules} />}
           {tab==='budget'       && <Budget budgets={budgets} setBudgets={setBudgets} catSpend={catSpend} toast={showToast} cats={cats} />}
           {tab==='recurring'    && <Recurring recurring={recurring} setRec={setRec} setTxs={setTxs} nid={nid} setNid={setNid} toast={showToast} cats={cats} sources={sources} />}
-          {tab==='settings'     && <Settings cats={cats} setCats={setCats} sources={sources} setSources={setSources} rules={rules} setRules={setRules} budgets={budgets} setBudgets={setBudgets} setTxs={setTxs} setRec={setRec} toast={showToast} txs={txs} income={income} expense={expense} month={month} />}
+          {tab==='settings' && <Settings cats={cats} setCats={setCats} sources={sources} setSources={setSources} rules={rules} setRules={setRules} budgets={budgets} setBudgets={setBudgets} setTxs={setTxs} setRec={setRec} toast={showToast} txs={txs} income={income} expense={expense} month={month} nid={nid} setNid={setNid} />}
         </div>
       </main>
 
@@ -729,7 +729,7 @@ function Recurring({ recurring, setRec, setTxs, nid, setNid, toast, cats, source
 
 // ── Settings ───────────────────────────────────────────────────────────────
 
-function Settings({ cats, setCats, sources, setSources, rules, setRules, budgets, setBudgets, setTxs, setRec, toast, txs, income, expense, month }) {
+function Settings({ cats, setCats, sources, setSources, rules, setRules, budgets, setBudgets, setTxs, setRec, toast, txs, income, expense, month, nid, setNid }) {
   const [section, setSection]   = useState('cats')
   const [newCatName, setNewCatName] = useState('')
   const [newCatIcon, setNewCatIcon] = useState('ti-dots')
