@@ -1334,4 +1334,4 @@ const SPARKASSE_RULES = {
   Sonstiges:    'amazon,topstep,consors,easycredit,teambank,paypal,etsy,microsoft,google,anthropic,claude',
 }
 
-}
+
